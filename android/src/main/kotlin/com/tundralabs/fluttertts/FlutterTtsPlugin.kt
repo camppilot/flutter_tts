@@ -195,6 +195,7 @@ class FlutterTtsPlugin : MethodCallHandler, FlutterPlugin {
                     }
                     invokeMethod("speak.onError", "Error from TextToSpeech (speak) - $errorCode")
                 }
+                releaseAudioFocus()
             }
         }
 
