@@ -518,6 +518,13 @@ public class SwiftFlutterTtsPlugin: NSObject, FlutterPlugin, AVSpeechSynthesizer
   }
 
   public func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) {
+    if shouldDeactivateAndNotifyOthers(audioSession) && self.autoStopSharedSession {
+      do {
+        try audioSession.setActive(false, options: .notifyOthersOnDeactivation)
+      } catch {
+        print(error)
+      }
+    }
     self.channel.invokeMethod("speak.onCancel", arguments: nil)
   }
 
