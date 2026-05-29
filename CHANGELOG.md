@@ -4,6 +4,7 @@
 
 ### Fixes
 
+- **iOS:** Add `notifyOthersOnDeactivation` parameter to `setIosAudioSessionActive` so callers can release `duckOthers` and notify other audio apps to resume
 - **Android:** Fix TTS reconnection behaviors
 - **Windows:** Replace deprecated exec_program with execute_process
 - **Windows:** Fix error on MSVC compilers

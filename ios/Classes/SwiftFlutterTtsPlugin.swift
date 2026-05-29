@@ -123,8 +123,19 @@ public class SwiftFlutterTtsPlugin: NSObject, FlutterPlugin, AVSpeechSynthesizer
       self.setIosAudioSessionActive(active: sharedInstance, result: result)
       break
     case "setIosAudioSessionActive":
-      let active = call.arguments as! Bool
-      self.setIosAudioSessionActive(active: active, result: result)
+      if let args = call.arguments as? [String: Any] {
+        let active = args["active"] as? Bool ?? false
+        let notifyOthersOnDeactivation = args["notifyOthersOnDeactivation"] as? Bool ?? false
+        self.setIosAudioSessionActive(
+          active: active,
+          notifyOthersOnDeactivation: notifyOthersOnDeactivation,
+          result: result
+        )
+      } else if let active = call.arguments as? Bool {
+        self.setIosAudioSessionActive(active: active, result: result)
+      } else {
+        result(0)
+      }
       break
     case "autoStopSharedSession":
       let autoStop = call.arguments as! Bool
@@ -331,9 +342,17 @@ public class SwiftFlutterTtsPlugin: NSObject, FlutterPlugin, AVSpeechSynthesizer
     }
   }
 
-  private func setIosAudioSessionActive(active: Bool, result: FlutterResult) {
+  private func setIosAudioSessionActive(
+    active: Bool,
+    notifyOthersOnDeactivation: Bool = false,
+    result: FlutterResult
+  ) {
       do {
-          try AVAudioSession.sharedInstance().setActive(active)
+          if !active && notifyOthersOnDeactivation {
+              try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+          } else {
+              try AVAudioSession.sharedInstance().setActive(active)
+          }
           result(1)
       } catch {
           result(0)
